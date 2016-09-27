@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ziroom.mybatis.mapper.UserMapper">
+	<!-- resultMap定义[getUserByIdMap] -->
+	
+	<select id="getUserById" parameterType="string" resultType="cn.ziroom.mybatis.pojo.User">
+		select * from t_user t where t.id = #{id} 
+	</select>
+	
+	<!-- insert -->
+	<insert id="insertUser" parameterType="cn.ziroom.mybatis.pojo.User">
+		<selectKey resultType="string" order="BEFORE" keyProperty="id">
+		select UUID()
+		</selectKey>
+		insert into t_user(id,name,sex,age,birthday,addr) values(#{id},#{name},#{sex},#{age},#{birthday},#{addr})
+	</insert>
+	
+	<!-- update -->
+	<update id="updateUser" parameterType="cn.ziroom.mybatis.pojo.User">
+		update t_user set name = #{name}, sex = #{sex}, age = #{age}, birthday = #{birthday}, addr = #{addr} where id=#{id}
+	</update>
+	
+	<!-- delete -->
+	<delete id="deleteUserById" parameterType="string">
+		delete from t_user where id = #{id}
+	</delete>
+	
+	<!-- 多条件查询 -->
+	<select id="getUserByfields" parameterType="cn.ziroom.mybatis.pojo.UserVO" resultType="cn.ziroom.mybatis.pojo.User">
+		select * from t_user
+		<where>
+			<if test="user!=null">
+				<if test="user.name!=null">
+					name like #{user.name}
+				</if>
+				<if test="user.sex!=null">
+					sex = #{user.sex}
+				</if>
+			</if>
+		</where>
+	</select>
+	
+	<!-- foreach -->
+	<select id="getUserByName" parameterType="list" resultType="cn.ziroom.mybatis.pojo.User">
+		select * from t_user where name in
+		<foreach collection="list" item="name" open="(" close=")" separator=",">
+			#{name}
+		</foreach>
+	</select>
+</mapper>

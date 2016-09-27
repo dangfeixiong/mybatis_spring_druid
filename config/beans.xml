@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	                   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	                   http://www.springframework.org/schema/tx
+           			   http://www.springframework.org/schema/tx/spring-tx.xsd
+	                   http://www.springframework.org/schema/aop
+	                   http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+	                   http://www.springframework.org/schema/context
+	                   http://www.springframework.org/schema/context/spring-context-2.5.xsd
+	                  ">
+<!-- mybatis与spring整合 -->
+
+	<!-- 自动扫描 -->  
+    <context:component-scan base-package="cn.ziroom.mybatis">
+    <!-- 不扫描Controller -->
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+	<!-- 加载配置文件 -->
+	<!-- 方式1 -->
+	<!-- <context:property-placeholder location="classpath:db.properties"/> -->
+	<!-- 方式2 -->
+	<bean id="propertyConfigurer"  
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+        <property name="location" value="classpath:db.properties" />  
+    </bean>  
+	<!-- 配置数据源 dbcp-->
+	<!-- class="org.apache.commons.dbcp.BasicDataSource" -->
+	<!-- 
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}"/>
+		<property name="username" value="${jdbc.username}"/>
+		<property name="password" value="${jdbc.password}"/>
+		<property name="maxIdle" value="5"/>
+	</bean>
+	 -->
+	 
+	<!-- 使用Gruid连接池[性能好|扩展性强] -->
+	<!--
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${Gruid.driver}"/>
+		<property name="url" value="${Gruid.url}"/>
+		<property name="username" value="${Gruid.username}"/>
+		<property name="password" value="${Gruid.password}"/>
+		<property name="filters" value="stat" />  
+		<property name="maxActive" value="20" />   
+		<property name="initialSize" value="1" />  
+		<property name="maxWait" value="60000" />  
+		<property name="minIdle" value="1" />  
+		<property name="timeBetweenEvictionRunsMillis" value="3000" />  
+		<property name="minEvictableIdleTimeMillis" value="300000" />  
+		<property name="validationQuery" value="SELECT 'x'" />  
+		<property name="testWhileIdle" value="true" />  
+		<property name="testOnBorrow" value="false" />  
+		<property name="testOnReturn" value="false" />  
+		<property name="poolPreparedStatements" value="true" />  
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />  
+	</bean>
+	 -->
+	<!-- ===============masterdataSource与slavedataSource配置============= -->
+	<!--  -->
+	<bean id="masterdataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${Master.driver}"/>
+		<property name="url" value="${Master.url}"/>
+		<property name="username" value="${Master.username}"/>
+		<property name="password" value="${Master.password}"/>
+		<property name="minIdle" value="3"/>
+        <property name="maxActive" value="20"/>
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+        <property name="minEvictableIdleTimeMillis" value="300000"/>
+        
+		<property name="validationQuery" value="SELECT 'x'" />  
+		<property name="testWhileIdle" value="true" />  
+		<property name="testOnBorrow" value="false" />  
+		<property name="testOnReturn" value="false" />  
+		<property name="poolPreparedStatements" value="true" />  
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />  
+	</bean>
+	<bean id="slavedataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${Slave.driver}"/>
+		<property name="url" value="${Slave.url}"/>
+		<property name="username" value="${Slave.username}"/>
+		<property name="password" value="${Slave.password}"/>
+		<property name="minIdle" value="3"/>
+        <property name="maxActive" value="20"/>
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+        <property name="minEvictableIdleTimeMillis" value="300000"/>
+        
+        <property name="validationQuery" value="SELECT 'x'" />  
+		<property name="testWhileIdle" value="true" />  
+		<property name="testOnBorrow" value="false" />  
+		<property name="testOnReturn" value="false" />  
+		<property name="poolPreparedStatements" value="true" />  
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />  
+	</bean>
+	
+	<bean id="slave1dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${Slave1.driver}"/>
+		<property name="url" value="${Slave1.url}"/>
+		<property name="username" value="${Slave1.username}"/>
+		<property name="password" value="${Slave1.password}"/>
+		<property name="minIdle" value="3"/>
+        <property name="maxActive" value="20"/>
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+        <property name="minEvictableIdleTimeMillis" value="300000"/>
+        
+        <property name="validationQuery" value="SELECT 'x'" />  
+		<property name="testWhileIdle" value="true" />  
+		<property name="testOnBorrow" value="false" />  
+		<property name="testOnReturn" value="false" />  
+		<property name="poolPreparedStatements" value="true" />  
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />  
+	</bean>
+	
+	<bean id="dataSource" class="cn.ziroom.mybatis.ms.DynamicDataSource">
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+                 <entry key="master" value-ref="masterdataSource"/>  
+                 <entry key="slave" value-ref="slavedataSource"/>
+                 <entry key="slave1" value-ref="slave1dataSource"/>  
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="masterdataSource"/>
+	</bean>
+	
+	<!-- ================================================================ --> 
+	<!-- 加载sqlSessionFactory -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="configLocation" value="classpath:SqlMapConfig.xml" />
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- 加载mapper接口 -->
+	<!-- 
+	<bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="cn.ziroom.mybatis.mapper.UserMapper" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	-->
+	
+	<!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+	<!-- -->  
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">  
+        <property name="basePackage" value="cn.ziroom.mybatis.mapper" />  
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>  
+    </bean>  
+  	 
+    <!-- (事务管理)transaction manager, use JtaTransactionManager for global tx  -->  
+    <!--  -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">  
+        <property name="dataSource" ref="dataSource" />  
+    </bean>
+    
+     <!-- <tx:annotation-driven transaction-manager="transactionManager" /> -->
+  
+  	<!--事物管理配置-->
+  	
+     <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+	        <tx:method name="select*" propagation="SUPPORTS" />
+	        <tx:method name="get*" propagation="SUPPORTS" />
+	        <tx:method name="find*" propagation="SUPPORTS" />
+	        <tx:method name="handleJdloanCallBack" propagation="NOT_SUPPORTED" />
+	        <tx:method name="handleAppPayCallBack" propagation="NOT_SUPPORTED" />
+	        <tx:method name="*" propagation="REQUIRED" />
+       	</tx:attributes>
+    </tx:advice>
+    
+    <!-- 配置数据库注解aop -->
+    <!--  -->
+    <bean id="manyDataSourceAspect" class="cn.ziroom.mybatis.ms.DataSourceAspect" />
+    <aop:config>
+        <aop:aspect id="c" ref="manyDataSourceAspect">
+            <aop:pointcut id="tx" expression="execution(* cn.ziroom.mybatis.mapper.*.*(..))"/>
+            <aop:before pointcut-ref="tx" method="before"/>
+        </aop:aspect>
+    </aop:config>
+    
+    <!-- 配置数据库注解aop -->  
+    
+    <aop:config>
+        <aop:pointcut id="interceptorPoint"
+            expression="execution(* com.ziroom.service..*.*(..))" />
+        <aop:advisor advice-ref="txAdvice"
+            pointcut-ref="interceptorPoint" />        
+    </aop:config> 
+    
+</beans>

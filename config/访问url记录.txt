@@ -1,0 +1,7 @@
+1.项目访问url:
+http://localhost:8080/mybatis_spring_druid/UserAction/getUser?id=1
+2.Gruid访问url:
+http://localhost:8080/mybatis_spring_druid/druid
+
+读写分离学习地址:
+http://www.cnblogs.com/surge/p/3582248.html

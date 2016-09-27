@@ -1,0 +1,25 @@
+spring事物管理：
+1.声明式[配置文件]
+	DateSource
+	TransactionManger
+	代理机制
+2.编程式[注解]
+类头的@Transactional为默认事务配置，如方法没有自己的事务类型，则按默认事务，如有自己的配置，则按自己的配置。
+
+
+Spring事务类型详解：
+
+PROPAGATION_REQUIRED--支持当前事务，如果当前没有事务，就新建一个事务。这是最常见的选择。
+PROPAGATION_SUPPORTS--支持当前事务，如果当前没有事务，就以非事务方式执行。
+PROPAGATION_MANDATORY--支持当前事务，如果当前没有事务，就抛出异常。
+PROPAGATION_REQUIRES_NEW--新建事务，如果当前存在事务，把当前事务挂起。
+PROPAGATION_NOT_SUPPORTED--以非事务方式执行操作，如果当前存在事务，就把当前事务挂起。
+PROPAGATION_NEVER--以非事务方式执行，如果当前存在事务，则抛出异常。
+PROPAGATION_NESTED--如果当前存在事务，则在嵌套事务内执行。如果当前没有事务，则进行与PROPAGATION_REQUIRED类似的操作。
+
+
+事务属性通常由事务的传播行为，事务的隔离级别，事务的超时值和事务只读标志组成。
+
+spring声明式事务，spring使用AOP来支持声明式事务，会根据事务属性，自动在方法调用之前决定是否开启一个事务，并在方法执行之后决定事务提交或回滚事务。
+
+事物隔离级别[数据库级别] | 事物传播特性[java方法级别]
